@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   #   resources :products
 
   resources :movies
+  get 'clear_session', to: 'movies#clear_session', as: 'clear_session'
   
   # Example resource route with options:
   #   resources :products do

@@ -11,27 +11,37 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
 
     if params[:ratings]
-      # Extract the selected ratings from the params hash
       @ratings_to_show = params[:ratings].keys
+      session[:ratings] = params[:ratings]  # Save to session
+    elsif session[:ratings]
+      @ratings_to_show = session[:ratings].keys
     else
-      # If no ratings are selected, show all ratings
       @ratings_to_show = @all_ratings
     end
 
-    # Create a hash of ratings to show for easy checking in the view
+    if params[:sort]
+      @sort_column = params[:sort]
+      session[:sort] = params[:sort]  # Save to session
+    elsif session[:sort]
+      @sort_column = session[:sort]
+    else
+      @sort_column = 'title'
+    end
+
+    # Create hash for ratings to show checkboxes
     @ratings_to_show_hash = @ratings_to_show.map { |rating| [rating, 1] }.to_h
 
-    @ratings_to_show_hash = @ratings_to_show.map { |rating| [rating, 1] }.to_h
-
-    @sort_column = params[:sort] || 'title'
+    # Retrieve filtered and sorted movies
     @movies = Movie.with_ratings(@ratings_to_show).order(@sort_column)
 
+    # Set CSS classes for sorted column
     @title_header_class = @sort_column == 'title' ? 'hilite bg-warning' : ''
     @release_date_header_class = @sort_column == 'release_date' ? 'hilite bg-warning' : ''
-
-
-    # Filter the movies based on the selected ratings
-   
+  end
+  
+  def clear_session
+    session.clear
+    redirect_to movies_path
   end
 
   def new
