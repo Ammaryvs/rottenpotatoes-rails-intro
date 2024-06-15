@@ -7,7 +7,22 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    
+    @all_ratings = Movie.all_ratings
+
+    if params[:ratings]
+      # Extract the selected ratings from the params hash
+      @ratings_to_show = params[:ratings].keys
+    else
+      # If no ratings are selected, show all ratings
+      @ratings_to_show = @all_ratings
+    end
+
+    # Create a hash of ratings to show for easy checking in the view
+    @ratings_to_show_hash = @ratings_to_show.map { |rating| [rating, 1] }.to_h
+
+    # Filter the movies based on the selected ratings
+    @movies = Movie.with_ratings(@ratings_to_show)
   end
 
   def new
