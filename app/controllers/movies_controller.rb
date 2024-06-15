@@ -21,8 +21,17 @@ class MoviesController < ApplicationController
     # Create a hash of ratings to show for easy checking in the view
     @ratings_to_show_hash = @ratings_to_show.map { |rating| [rating, 1] }.to_h
 
+    @ratings_to_show_hash = @ratings_to_show.map { |rating| [rating, 1] }.to_h
+
+    @sort_column = params[:sort] || 'title'
+    @movies = Movie.with_ratings(@ratings_to_show).order(@sort_column)
+
+    @title_header_class = @sort_column == 'title' ? 'hilite bg-warning' : ''
+    @release_date_header_class = @sort_column == 'release_date' ? 'hilite bg-warning' : ''
+
+
     # Filter the movies based on the selected ratings
-    @movies = Movie.with_ratings(@ratings_to_show)
+   
   end
 
   def new
